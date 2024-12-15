@@ -1,0 +1,111 @@
+\documentclass[border=15pt, multi, tikz]{standalone}
+\usepackage{import}
+\subimport{../../layers/}{init}
+\usetikzlibrary{positioning, shapes.geometric}
+
+\def\ConvColor{rgb:yellow,5;red,2.5;white,5}
+\def\ConvReluColor{rgb:yellow,5;red,5;white,5}
+\def\PoolColor{rgb:red,1;black,0.3}
+\def\SoftmaxColor{rgb:magenta,5;black,7}
+
+\begin{document}
+	
+	\begin{tikzpicture}
+		\tikzstyle{connection}=[ultra thick, every node/.style={sloped, allow upside down}, draw=\edgecolor, opacity=0.7]
+		\tikzset{every node/.style={font=\tiny}} % 设置所有节点字体为更小的字体
+		
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		%% Draw Layer Blocks
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		
+		% Input Layer
+		\pic[shift={(0,0,0)}] at (0,0,0) 
+		{Box={name=input, caption=Input, xlabel=28, ylabel=28, fill=white, opacity=0.5, height=28, width=1, depth=28}};
+		
+		% Conv2D + ReLU 8 filters (5x5)
+		\pic[shift={(1.5,0,0)}] at (input-east) 
+		{RightBandedBox={name=conv1, caption=Conv2D+ReLU, xlabel={{"8",""}}, zlabel=28, fill=\ConvColor, bandfill=\ConvReluColor, height=28, width=2, depth=28}};
+		
+		% Conv2D + ReLU 8 filters (5x5)
+		\pic[shift={(1.5,0,0)}] at (conv1-east) 
+		{RightBandedBox={name=conv2, caption=Conv2D+ReLU, xlabel={{"8",""}}, zlabel=28, fill=\ConvColor, bandfill=\ConvReluColor, height=28, width=2, depth=28}};
+		
+		% Conv2D + ReLU 16 filters (5x5)
+		\pic[shift={(1.5,0,0)}] at (conv2-east) 
+		{RightBandedBox={name=conv3, caption=Conv2D+ReLU, xlabel={{"16",""}}, zlabel=28, fill=\ConvColor, bandfill=\ConvReluColor, height=28, width=3, depth=28}};
+		
+		% MaxPooling2D (2x2)
+		\pic[shift={(1.5,0,0)}] at (conv3-east) 
+		{Box={name=pool1, caption=MaxPool, zlabel=14, fill=\PoolColor, opacity=0.5, height=14, width=1, depth=14}};
+		
+		% Conv2D + ReLU 32 filters (5x5)
+		\pic[shift={(1.5,0,0)}] at (pool1-east) 
+		{RightBandedBox={name=conv4, caption=Conv2D+ReLU, xlabel={{"32",""}}, zlabel=14, fill=\ConvColor, bandfill=\ConvReluColor, height=14, width=4, depth=14}};
+		
+		% Conv2D + ReLU 32 filters (5x5)
+		\pic[shift={(1.5,0,0)}] at (conv4-east) 
+		{RightBandedBox={name=conv5, caption=Conv2D+ReLU, xlabel={{"32",""}}, zlabel=14, fill=\ConvColor, bandfill=\ConvReluColor, height=14, width=4, depth=14}};
+		
+		% Conv2D + ReLU 64 filters (5x5)
+		\pic[shift={(1.5,0,0)}] at (conv5-east) 
+		{RightBandedBox={name=conv6, caption=Conv2D+ReLU, xlabel={{"64",""}}, zlabel=14, fill=\ConvColor, bandfill=\ConvReluColor, height=14, width=5, depth=14}};
+		
+		% MaxPooling2D (2x2)
+		\pic[shift={(1.5,0,0)}] at (conv6-east) 
+		{Box={name=pool2, caption=MaxPool, zlabel=7, fill=\PoolColor, opacity=0.5, height=7, width=1, depth=7}};
+		
+		% Conv2D + ReLU 64 filters (5x5)
+		\pic[shift={(1.5,0,0)}] at (pool2-east) 
+		{RightBandedBox={name=conv7, caption=Conv2D+ReLU, xlabel={{"64",""}}, zlabel=7, fill=\ConvColor, bandfill=\ConvReluColor, height=7, width=5, depth=7}};
+		
+		% MaxPooling2D (2x2)
+		\pic[shift={(1.5,0,0)}] at (conv7-east) 
+		{Box={name=pool3, caption=MaxPool, zlabel=4, fill=\PoolColor, opacity=0.5, height=4, width=1, depth=4}};
+		
+		% Conv2D + ReLU 128 filters (5x5)
+		\pic[shift={(1.5,0,0)}] at (pool3-east) 
+		{RightBandedBox={name=conv8, caption=Conv2D+ReLU, xlabel={{"128",""}}, zlabel=4, fill=\ConvColor, bandfill=\ConvReluColor, height=4, width=6, depth=4}};
+		
+		% MaxPooling2D (2x2)
+		\pic[shift={(1.5,0,0)}] at (conv8-east) 
+		{Box={name=pool4, caption=MaxPool, zlabel=2, fill=\PoolColor, opacity=0.5, height=2, width=1, depth=2}};
+		
+		% Flatten Layer
+		\pic[shift={(1.5,0,0)}] at (pool4-east) 
+		{Box={name=flatten, caption=Flatten, zlabel=1, fill=white, opacity=0.5, height=1, width=1, depth=1}};
+		
+		% Dense Layer (128 units)
+		\pic[shift={(1.5,0,0)}] at (flatten-east) 
+		{Box={name=dense1, caption=Dense, xlabel=128, zlabel=1, fill=white, opacity=0.5, height=1, width=1, depth=1}};
+		
+		% Dropout Layer
+		\pic[shift={(1.5,0,0)}] at (dense1-east) 
+		{Box={name=dropout, caption=Dropout, zlabel=1, fill=gray, opacity=0.5, height=1, width=1, depth=1}};
+		
+		% Dense Layer (10 units)
+		\pic[shift={(1.5,0,0)}] at (dropout-east) 
+		{Box={name=dense2, caption=Dense, xlabel=10, zlabel=1, fill=white, opacity=0.5, height=1, width=1, depth=1}};
+		
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		%% Draw Connections
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		\draw [connection] (input-east) -- (conv1-west);
+		\draw [connection] (conv1-east) -- (conv2-west);
+		\draw [connection] (conv2-east) -- (conv3-west);
+		\draw [connection] (conv3-east) -- (pool1-west);
+		\draw [connection] (pool1-east) -- (conv4-west);
+		\draw [connection] (conv4-east) -- (conv5-west);
+		\draw [connection] (conv5-east) -- (conv6-west);
+		\draw [connection] (conv6-east) -- (pool2-west);
+		\draw [connection] (pool2-east) -- (conv7-west);
+		\draw [connection] (conv7-east) -- (pool3-west);
+		\draw [connection] (pool3-east) -- (conv8-west);
+		\draw [connection] (conv8-east) -- (pool4-west);
+		\draw [connection] (pool4-east) -- (flatten-west);
+		\draw [connection] (flatten-east) -- (dense1-west);
+		\draw [connection] (dense1-east) -- (dropout-west);
+		\draw [connection] (dropout-east) -- (dense2-west);
+		
+	\end{tikzpicture}
+	
+\end{document}
