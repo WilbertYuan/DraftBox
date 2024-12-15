@@ -20,22 +20,22 @@ def classify_one_example(x, centers):
 def re_classify_examples(X, example_bags, centers):
     for example_bag in example_bags:
         example_bag.clear()
-    new_cost = 0 
+    new_cost = 0
     for x in X:
         index, dist = classify_one_example(x, centers)
-        example_bags[index].append(x) 
-        new_cost += dist 
-    return new_cost / len(X) 
+        example_bags[index].append(x)
+        new_cost += dist
+    return new_cost / len(X)
 
 def cal_centers(example_bags, centers):
     for i in range(len(example_bags)):
         if len(example_bags[i]) > 0:
-            centers[i] = np.mean(example_bags[i], axis=0)  
+            centers[i] = np.mean(example_bags[i], axis=0)
 
 def kmeans(X, K, max_iter=5000, tol=1e-20):
-    centers = np.array([X[i] for i in range(K)]) 
-    example_bags = [[] for _ in range(K)]  
-    cost = float('inf')  
+    centers = np.array([X[i] for i in range(K)])
+    example_bags = [[] for _ in range(K)]
+    cost = float('inf')
 
     for i in range(max_iter):
         new_cost = re_classify_examples(X, example_bags, centers)
@@ -56,7 +56,7 @@ def accuracy(labels_true, labels_pred):
 
 data = np.loadtxt("data/number_data/arab_digits_training.txt", delimiter="\t")
 X = data[:, 1:] 
-y = data[:, 0]  
+y = data[:, 0]
 
 pca = PCA(n_components=2)
 X_pca = pca.fit_transform(X)

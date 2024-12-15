@@ -35,9 +35,8 @@ print(f'Validation AUC: {val_auc:.4f}')
 
 
 y_test_prob = model.predict_proba(X_test)[:, 1]
-y_test_prob = [1 if i > 0.5 else 0 for i in y_test_prob]
-
-np.savetxt('result/prediction2-2.txt', y_test_prob, fmt='%.2f')
+y_test = [1 if i > 0.5 else 0 for i in y_test_prob]
+np.savetxt('result/prediction2-2.txt', y_test, fmt='%.2f')
 
 plt.figure(figsize=(8, 6))
 plt.scatter(range(len(y_train_prob)), y_train_prob,label='Training Prediction Probabilities', alpha=0.5,s = 0.5)
